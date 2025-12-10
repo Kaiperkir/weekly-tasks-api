@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Таблица дел на неделю</title>
+</head>
+<body>
+  <h1>Таблица дел на неделю</h1>
+
+  <button onclick="loadTasks()">Загрузить все задачи</button>
+  <button onclick="loadMonday()">Только понедельник</button>
+
+  <div id="tasks"></div>
+
+  <script>
+    async function loadTasks() {
+      const res = await fetch('/api/tasks');
+      const data = await res.json();
+      render(data.data);
+    }
+
+    async function loadMonday() {
+      const res = await fetch('/api/tasks?day=monday');
+      const data = await res.json();
+      render(data.data);
+    }
+
+    function render(tasks) {
+      const container = document.getElementById('tasks');
+      if (!tasks.length) {
+        container.innerHTML = '<p>Нет задач</p>';
+        return;
+      }
+      container.innerHTML = tasks
+        .map(t => `<p>${t.day}: ${t.title} (${t.priority}) - ${t.completed ? '✔' : '✗'}</p>`)
+        .join('');
+    }
+  </script>
+</body>
+</html>
